@@ -16,6 +16,18 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(task) {
 
+    const taskCard = $(`<div class="card text-center">
+                            <div class="card-header">
+                                ${task.title}
+                            </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">${task.description}</h5>
+                                    <p class="card-text">${task.date}</p>
+                                    <button class="btn btn-primary">Delete</a>
+                                </div>
+                            </div>`);
+
+    return taskCard
 }
 
 // Todo: create a function to render the task list and make cards draggable
@@ -40,5 +52,5 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-    generateTaskId();
+   
 });
