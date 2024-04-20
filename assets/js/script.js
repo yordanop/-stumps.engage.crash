@@ -1,7 +1,7 @@
 // Retrieve tasks and nextId from localStorage
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
-let deleteButtons = $('#delete-task-btn')
+
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -39,8 +39,6 @@ function renderTaskList() {
     const doneSection = $('#done-cards');
 
     for (task_i of taskList){
-        
-
         if(task_i.taskStatus === 'Todo'){
             toDoSection.append(createTaskCard(task_i));
         }else if(task_i.taskStatus === 'InProgress'){
@@ -48,9 +46,7 @@ function renderTaskList() {
         }else{
             doneSection.append(createTaskCard(task_i));
         }
-
     }
-
 }
 
 // Todo: create a function to handle adding a new task
@@ -82,7 +78,7 @@ function handleAddTask(event){
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
     console.log('helo')
-    $(event.target).parent().remove()
+    $(event.target).parent().parent().remove()
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
@@ -93,11 +89,13 @@ function handleDrop(event, ui) {
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
     const addTaskButton = $('#addTask');
+
+    const toDoSection = $('#todo-cards');
     
     if (taskList){
         renderTaskList();
         console.log('breakpoint1')
-        deleteButtons.on('click', '.delete-task-btn', handleDeleteTask);
+        toDoSection.on('click', '.delete-task-btn', handleDeleteTask);
     }
     
     
