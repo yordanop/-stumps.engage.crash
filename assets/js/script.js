@@ -6,7 +6,7 @@ let nextId = JSON.parse(localStorage.getItem("nextId"));
 function generateTaskId() {
     let newTaskID;
     if (taskList){
-         newTaskID =  (taskList.id + 1 + 0xFFFFF).toString(16);
+         newTaskID =  (taskList.length + 1 + 0xFFFFF).toString(16);
     }else{
         newTaskID = (1 + 0xFFFFF).toString(16);
     }
@@ -37,8 +37,21 @@ function renderTaskList() {
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
-    console.log(event);
-    console.log('hello');
+    const taskTitleInput = $('#recipient-title');
+    const taskDateInput = $('#date-task');
+    const taskDescriptionInput = $('#message-text');
+    task = {taskID: generateTaskId(),
+            title: taskTitleInput.val(),
+            date: taskDateInput.val(),
+            description: taskDescriptionInput.val(),
+            taskStatus:'Todo'}
+    if(taskList){
+        taskList.push(task);
+    }else{
+        taskList = [task];
+    }
+    localStorage.setItem('tasks', JSON.stringify(taskList));
+    $('#formModal').modal('toggle');
 }
 
 // Todo: create a function to handle deleting a task
@@ -53,10 +66,10 @@ function handleDrop(event, ui) {
 
 // Todo: when the page loads, render the task list, add event listeners, make lanes droppable, and make the due date field a date picker
 $(document).ready(function () {
-    const addTaskButton = $('#formModal');
+    const addTaskButton = $('#addTask');
 
     renderTaskList();
 
-    addTaskButton.on('show.bs.modal', handleAddTask);
+    addTaskButton.on('click', handleAddTask);
    
 });
