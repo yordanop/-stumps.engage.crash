@@ -105,6 +105,15 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
+    console.log(event);
+    
+    const droppedCard = ui.draggable[0];
+    console.log(droppedCard);
+    // console.log(droppedCard.attr('class'));
+
+    $( this )
+        .children().eq(1).children().append(droppedCard);
+    //       .addClass( "ui-state-highlight" )
 
 
 }
@@ -126,7 +135,20 @@ $(document).ready(function () {
           changeYear: true,
         });
       });
-    
+
+      $(function () {
+        $('.task-card').draggable({ revert: "valid" });
+
+     
+        $('.lane').droppable({
+            accept: ".task-card",
+            classes: {
+            //   "ui-droppable-active": "ui-state-active",
+            //   "ui-droppable-hover": "ui-state-hover"
+            },
+            drop:handleDrop});
+      });
     addTaskButton.on('click', handleAddTask);
 
 });
+
