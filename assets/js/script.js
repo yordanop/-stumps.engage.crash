@@ -16,15 +16,31 @@ function generateTaskId() {
 
 // Todo: create a function to create a task card
 function createTaskCard(task) {
+    const todayDay = dayjs().format('MM/DD/YY');
+    const dueDate = dayjs(task.date).format('MM/DD/YY');
+    let taskColor = null;
+    let textColor = null;
 
-    const taskCard = $(`<div class="card text-center bg-danger task-card draggable" data-taskid="#${task.taskID}">
+    if(dueDate < todayDay){
+        taskColor = 'bg-danger';
+        textColor = 'text-light';
+    }else if(dueDate === todayDay){
+        taskColor = 'bg-warning';
+        textColor = 'text-light';
+    }else {
+        taskColor = 'bg-body-color';
+        textColor = 'text-black';
+    }
+    
+
+    const taskCard = $(`<div class="card text-center ${taskColor}  ${textColor} task-card" data-taskid="#${task.taskID}">
                             <div class="card-header">
                                 ${task.title}
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">${task.description}</h5>
-                                <p class="card-text">${task.date}</p>
-                                <button class="btn btn-danger btn-success-border-subtle delete-task-btn">Delete</a>
+                                <p class="card-text card-contrast">${task.date}</p>
+                                <button class="btn btn-danger delete-task-btn">Delete</a>
                             </div>
                             </div>`);
 

@@ -12,8 +12,6 @@ body {
 }
 
 .task-card {
-  /* mover este color ya qeu definamos el estatus */
-  color: white;
   margin: 1rem auto;
 }
 
