@@ -105,35 +105,44 @@ function handleDeleteTask(event){
     const taskDataId = taskToRemove.data('taskid');
     const indexTask = getIndexTask(taskDataId);
     
-    taskToRemove.remove()
+    taskToRemove.remove();
     taskList.splice(indexTask, 1);
     localStorage.setItem('tasks', JSON.stringify(taskList));
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-    const droppedCard = ui.draggable[0];
-    const taskDataId = droppedCard.getAttribute('data-taskid');
+    const droppedCard = $(ui.draggable[0]);
+    const taskDataId = droppedCard.attr('data-taskid');
     const taskData = taskList[getIndexTask(taskDataId)];
     const taskCardStatus = taskData.taskStatus;
-    const newLaneStatus = event.target.getAttribute('id');
+    const newLaneStatus = $(event.target).attr('id');
 
     if(taskCardStatus !== newLaneStatus){
         $( this )
             .children().eq(1).children().append(droppedCard);
         taskData.taskStatus = newLaneStatus;
         localStorage.setItem('tasks', JSON.stringify(taskList));
-        if(newLaneStatus === 'done'){
 
-            if(dueDate === todayDay){
-                taskColor = 'bg-warning';
-                textColor = 'text-light';
-            }else {
-                taskColor = 'bg-body-color';
-                textColor = 'text-black';
-            }
-            
-            droppedCard.removeClass()
+        const actualColor = droppedCard.attr('class').split(" ")[2];
+
+
+        if(newLaneStatus === 'done'){
+            console.log(actualColor);
+            droppedCard.removeClass(actualColor).addClass( "bg-body-color" );
+            droppedCard.removeClass('text-light').addClass( "text-black" );
+
+            // .find('bg-warning')
+            // if(taskCardStatus === 'in-progress'){
+            //     taskColor = 'bg-warning';
+
+            // }else if(taskCardStatus === 'to-do') {
+            //     taskColor = 'bg-body-color';
+            // }
+
+            // 
+            // 
+
 
         }
     }
@@ -178,6 +187,6 @@ $(document).ready(function () {
 });
 
 function getIndexTask(taskID){
-    return taskList.findIndex(taskIndex => taskIndex.taskID === taskID);
+    return taskList.findIndex(taskIndex => taskIndex.taskID === taskID.toString());
 }
 
