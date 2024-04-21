@@ -27,13 +27,15 @@ function createTaskCard(task) {
     let taskColor = null;
     let textColor = null;
 
-    if(dueDate < todayDay){
-        taskColor = 'bg-danger';
-        textColor = 'text-light';
-    }else if(dueDate === todayDay){
-        taskColor = 'bg-warning';
-        textColor = 'text-light';
-    }else {
+    if(task.taskStatus !== 'done'){
+        if(dueDate < todayDay){
+            taskColor = 'bg-danger';
+            textColor = 'text-light';
+        }else if(dueDate === todayDay){
+            taskColor = 'bg-warning';
+            textColor = 'text-light';
+        }
+    }else{
         taskColor = 'bg-body-color';
         textColor = 'text-black';
     }
@@ -118,40 +120,43 @@ function handleDrop(event, ui) {
     const taskCardStatus = taskData.taskStatus;
     const newLaneStatus = $(event.target).attr('id');
 
+    const todayDay = dayjs().format('MM/DD/YY');
+    const dueDate = dayjs(taskData.date).format('MM/DD/YY');
+    let taskColor = null;
+
     if(taskCardStatus !== newLaneStatus){
         $( this )
             .children().eq(1).children().append(droppedCard);
         taskData.taskStatus = newLaneStatus;
         localStorage.setItem('tasks', JSON.stringify(taskList));
 
-        const actualColor = droppedCard.attr('class').split(" ")[2];
-
-
+        let cardclassList = droppedCard.attr('class').split(" ");
+        const bgClassIndex = cardclassList.findIndex(taskIndex => taskIndex.includes('bg-'));
+        let textClassIndex = cardclassList.findIndex(taskIndex => taskIndex.includes('text-b'));
+        if (textClassIndex === -1){
+            textClassIndex = cardclassList.findIndex(taskIndex => taskIndex.includes('text-l'));
+        }
+        const actualColor = cardclassList[bgClassIndex];
+        const actualTextColor = cardclassList[textClassIndex];
+        
         if(newLaneStatus === 'done'){
-            console.log(actualColor);
             droppedCard.removeClass(actualColor).addClass( "bg-body-color" );
             droppedCard.removeClass('text-light').addClass( "text-black" );
+        }else{
+            console.log(actualTextColor);
+            if(actualTextColor === 'text-black'){
+                
+                if(dueDate < todayDay){
+                    taskColor = 'bg-danger';
+                }else if(dueDate === todayDay){
+                    taskColor = 'bg-warning';
+                }
+                droppedCard.removeClass(actualColor).addClass(taskColor);
+            }
 
-            // .find('bg-warning')
-            // if(taskCardStatus === 'in-progress'){
-            //     taskColor = 'bg-warning';
-
-            // }else if(taskCardStatus === 'to-do') {
-            //     taskColor = 'bg-body-color';
-            // }
-
-            // 
-            // 
-
-
+            droppedCard.removeClass('text-black').addClass( "text-light" );
         }
     }
-
-
-    
-    
-    //       .addClass( "ui-state-highlight" )
-
 
 }
 
