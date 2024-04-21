@@ -2,6 +2,12 @@
 let taskList = JSON.parse(localStorage.getItem("tasks"));
 let nextId = JSON.parse(localStorage.getItem("nextId"));
 
+const toDoSection = $('#todo-cards');
+const inProgressSection = $('#in-progress-cards');
+const doneSection = $('#done-cards');
+
+const cardsStatusLanes = [toDoSection, inProgressSection, doneSection]
+
 
 // Todo: create a function to generate a unique task id
 function generateTaskId() {
@@ -33,7 +39,7 @@ function createTaskCard(task) {
     }
     
 
-    const taskCard = $(`<div class="card text-center ${taskColor}  ${textColor} task-card" data-taskid="#${task.taskID}">
+    const taskCard = $(`<div class="card text-center ${taskColor}  ${textColor} task-card" data-taskid="${task.taskID}">
                             <div class="card-header">
                                 ${task.title}
                             </div>
@@ -49,15 +55,10 @@ function createTaskCard(task) {
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
-
-    const toDoSection = $('#todo-cards');
-    const inProgressSection = $('#in-progress-cards');
-    const doneSection = $('#done-cards');
-
     for (task_i of taskList){
-        if(task_i.taskStatus === 'Todo'){
+        if(task_i.taskStatus === 'to-do'){
             toDoSection.append(createTaskCard(task_i));
-        }else if(task_i.taskStatus === 'InProgress'){
+        }else if(task_i.taskStatus === 'in-progress'){
             inProgressSection.append(createTaskCard(task_i));
         }else{
             doneSection.append(createTaskCard(task_i));
@@ -77,7 +78,7 @@ function handleAddTask(event){
             title: taskTitleInput.val(),
             date: taskDateInput.val(),
             description: taskDescriptionInput.val(),
-            taskStatus:'Todo'}
+            taskStatus:'to-do'}
     if(taskList){
         taskList.push(task);
     }else{
@@ -87,32 +88,59 @@ function handleAddTask(event){
     localStorage.setItem('tasks', JSON.stringify(taskList));
     
     $('#formModal').modal('toggle');
+
+    const createdTask = createTaskCard(task);
     
-    toDoSection.append(createTaskCard(task));
+    toDoSection.append(createdTask);
+
+    $(function () {
+        createdTask.draggable({ revert: "valid" });
+
+      });
 }
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
     const taskToRemove = $(event.target).parent().parent();
+    const taskDataId = taskToRemove.data('taskid');
+    const indexTask = getIndexTask(taskDataId);
+    
     taskToRemove.remove()
-    let taskDataId = taskToRemove.data('taskid');
-
-    const indexTask = taskList.findIndex(taskIndex => taskIndex.taskID === taskDataId.slice(1));
-
     taskList.splice(indexTask, 1);
     localStorage.setItem('tasks', JSON.stringify(taskList));
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
-    console.log(event);
-    
     const droppedCard = ui.draggable[0];
-    console.log(droppedCard);
-    // console.log(droppedCard.attr('class'));
+    const taskDataId = droppedCard.getAttribute('data-taskid');
+    const taskData = taskList[getIndexTask(taskDataId)];
+    const taskCardStatus = taskData.taskStatus;
+    const newLaneStatus = event.target.getAttribute('id');
 
-    $( this )
-        .children().eq(1).children().append(droppedCard);
+    if(taskCardStatus !== newLaneStatus){
+        $( this )
+            .children().eq(1).children().append(droppedCard);
+        taskData.taskStatus = newLaneStatus;
+        localStorage.setItem('tasks', JSON.stringify(taskList));
+        if(newLaneStatus === 'done'){
+
+            if(dueDate === todayDay){
+                taskColor = 'bg-warning';
+                textColor = 'text-light';
+            }else {
+                taskColor = 'bg-body-color';
+                textColor = 'text-black';
+            }
+            
+            droppedCard.removeClass()
+
+        }
+    }
+
+
+    
+    
     //       .addClass( "ui-state-highlight" )
 
 
@@ -122,11 +150,11 @@ function handleDrop(event, ui) {
 $(document).ready(function () {
     const addTaskButton = $('#addTask');
 
-    const toDoSection = $('#todo-cards');
-    
     if (taskList){
         renderTaskList();
-        toDoSection.on('click', '.delete-task-btn', handleDeleteTask);
+        for(let i = 0; i < cardsStatusLanes.length; i++){
+            cardsStatusLanes[i].on('click', '.delete-task-btn', handleDeleteTask);
+        }
     }
 
     $(function () {
@@ -142,13 +170,14 @@ $(document).ready(function () {
      
         $('.lane').droppable({
             accept: ".task-card",
-            classes: {
-            //   "ui-droppable-active": "ui-state-active",
-            //   "ui-droppable-hover": "ui-state-hover"
-            },
             drop:handleDrop});
       });
+
     addTaskButton.on('click', handleAddTask);
 
 });
+
+function getIndexTask(taskID){
+    return taskList.findIndex(taskIndex => taskIndex.taskID === taskID);
+}
 
