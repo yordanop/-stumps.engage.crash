@@ -17,15 +17,15 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(task) {
 
-    const taskCard = $(`<div class="card text-center task-card" data-id="#${task.taskID}">
+    const taskCard = $(`<div class="card text-center task-card" data-taskid="#${task.taskID}">
                             <div class="card-header">
                                 ${task.title}
                             </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">${task.description}</h5>
-                                    <p class="card-text">${task.date}</p>
-                                    <button class="btn btn-primary delete-task-btn">Delete</a>
-                                </div>
+                            <div class="card-body">
+                                <h5 class="card-title">${task.description}</h5>
+                                <p class="card-text">${task.date}</p>
+                                <button class="btn btn-primary delete-task-btn">Delete</a>
+                            </div>
                             </div>`);
 
     return taskCard
@@ -77,8 +77,14 @@ function handleAddTask(event){
 
 // Todo: create a function to handle deleting a task
 function handleDeleteTask(event){
-    console.log('helo')
-    $(event.target).parent().parent().remove()
+    const taskToRemove = $(event.target).parent().parent();
+    taskToRemove.remove()
+    let taskDataId = taskToRemove.data('taskid');
+
+    const indexTask = taskList.findIndex(taskIndex => taskIndex.taskID === taskDataId.slice(1));
+
+    taskList.splice(indexTask, 1);
+    localStorage.setItem('tasks', JSON.stringify(taskList));
 }
 
 // Todo: create a function to handle dropping a task into a new status lane
@@ -94,7 +100,6 @@ $(document).ready(function () {
     
     if (taskList){
         renderTaskList();
-        console.log('breakpoint1')
         toDoSection.on('click', '.delete-task-btn', handleDeleteTask);
     }
     
