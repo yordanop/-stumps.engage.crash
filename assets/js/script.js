@@ -114,9 +114,9 @@ function handleDeleteTask(event){
 
 // Todo: create a function to handle dropping a task into a new status lane
 function handleDrop(event, ui) {
+    console.log(ui);
     const droppedCard = $(ui.draggable[0]);
-    const taskDataId = droppedCard.attr('data-taskid');
-    const taskData = taskList[getIndexTask(taskDataId)];
+    const taskData = taskList[getIndexTask(droppedCard.attr('data-taskid'))];
     const taskCardStatus = taskData.taskStatus;
     const newLaneStatus = $(event.target).attr('id');
 
@@ -130,7 +130,6 @@ function handleDrop(event, ui) {
         textClassIndex = cardclassList.findIndex(taskIndex => taskIndex.includes('text-l'));
     }
     const actualColor = cardclassList[bgClassIndex];
-    const actualTextColor = cardclassList[textClassIndex];
 
     if(taskCardStatus !== newLaneStatus){
         $( this )
@@ -157,6 +156,7 @@ function handleDrop(event, ui) {
             droppedCard.removeClass('text-black').addClass(textColor);
         }
     }
+    
 
 }
 
@@ -179,12 +179,17 @@ $(document).ready(function () {
       });
 
       $(function () {
-        $('.task-card').draggable({ revert: "valid" });
+        $('.task-card').draggable({ 
+            revert: "valid",
+            containment: $('.container') });
 
      
         $('.lane').droppable({
             accept: ".task-card",
             drop:handleDrop});
+
+        $('.lane').sortable();
+
       });
 
     addTaskButton.on('click', handleAddTask);
